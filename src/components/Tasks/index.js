@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style.css";
 import { login } from "./../reducers/login.js";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const Tasks = () => {
   const state = useSelector((state) => {
@@ -11,33 +11,12 @@ const Tasks = () => {
       login: state,
     };
   });
-  const dispatch = useDispatch();
-
-  // console.log(state.login.signIn.token, "statelog");
 
   const [tasks, setTasks] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
-  const [id, setId] = useState("");
-  const [role, setRole] = useState("");
-  // const [token, setToken] = useState("");
   const navigate = useNavigate();
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
-
-  const addToken = async () => {
-    // const userLogged = await localStorage.getItem("user");
-    // setToken(JSON.parse(userLogged));
-
-    const id = await localStorage.getItem("id");
-    setId(JSON.parse(id));
-
-    const role = localStorage.getItem("role");
-    setRole(JSON.parse(role));
-  };
-
-  useEffect(() => {
-    addToken();
-  }, []);
 
   const moving = () => {
     // eslint-disable-next-line
@@ -50,7 +29,6 @@ const Tasks = () => {
         headers: { Authorization: `Bearer ${state.login.signIn.token}` },
       });
 
-      //   console.log(res);
       setTasks(res.data);
     } catch (error) {
       console.log(error.message);
@@ -64,15 +42,12 @@ const Tasks = () => {
         headers: { Authorization: `Bearer ${state.login.signIn.token}` },
       });
 
-      //   console.log(res.data);
       setUserTasks(res.data);
     } catch (error) {
       console.log(error);
     }
   };
   //------------------------------------------------
-
-  //   console.log(userTasks);
 
   useEffect(() => {
     getTasks();
@@ -90,12 +65,13 @@ const Tasks = () => {
       let newTask = e.target.addTask.value;
       console.log(newTask);
       // console.log(token);
-      const res = await axios.post(`${BASE_URL}/task/${id}`, {
-        name: newTask,
-        // headers: { Authorization: `Bearer ${token}` },
-      });
-
-      //   console.log(res);
+      const res = await axios.post(
+        `${BASE_URL}/task/${state.login.signIn.user._id}`,
+        {
+          name: newTask,
+          headers: { Authorization: `Bearer ${state.login.signIn.toke}` },
+        }
+      );
       setTasks(res.data);
       getTasks();
       getAllUsersTasks();
@@ -104,6 +80,7 @@ const Tasks = () => {
     }
   };
 
+  // console.log(tasks);
   const completed = async (_id) => {
     try {
       // eslint-disable-next-line
@@ -185,18 +162,18 @@ const Tasks = () => {
                 />
                 <button type="submit">Add</button>
               </form>
-              {role === "61a60b6d52ebd90581f0ff04" ? (
+              {state.login.signIn.user.role === "61a60b6d52ebd90581f0ff04" ? (
                 <>
                   {userTasks.length > 0 ? (
                     userTasks.map((task, i) => {
                       return (
-                        <div key={task.name} className="taskDiv">
+                        <div key={i + 9} className="taskDiv">
                           <>
                             <p
                               className={
                                 !task.isCompleted ? "tasksP" : "taskDone"
                               }
-                              key={task._id}
+                              key={i + 4}
                             >
                               {task.name}
                             </p>
@@ -209,6 +186,12 @@ const Tasks = () => {
                             >
                               user id:
                               {task.userId}
+                              {/* {tasks.map((task, i) => {
+                                return(
+                                <div key={i}>
+                                  <p>{task.userId}</p>
+                                </div>);
+                              })} */}
                             </p>
                           </>
                           <div className="btnsDiv">

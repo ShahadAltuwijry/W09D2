@@ -2,10 +2,21 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
+import { login } from "./../reducers/login.js";
+import { useSelector } from "react-redux";
 
 const UserData = () => {
+  const state = useSelector((state) => {
+    return {
+      login: state,
+    };
+  });
+
+  // console.log(state.login.signIn.user.email);
+  // const dispatch = useDispatch();
+
   const [userEmail, setUserEmail] = useState("");
-  const [role, setRole] = useState("");
+  // const [role, setRole] = useState("");
   const [token, setToken] = useState([]);
   const [get, setGet] = useState(false);
   const [getTask, setGetTask] = useState(false);
@@ -22,8 +33,8 @@ const UserData = () => {
     setToken(JSON.parse(userLogged));
     const data = localStorage.getItem("email");
     setUserEmail(JSON.parse(data));
-    const role = localStorage.getItem("role");
-    setRole(JSON.parse(role));
+    // const role = localStorage.getItem("role");
+    // setRole(JSON.parse(role));
   };
 
   useEffect(() => {
@@ -34,7 +45,7 @@ const UserData = () => {
   const getAllUsers = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/adminAll`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${state.login.signIn.token}` },
       });
       return setAllUsers(res.data);
     } catch (error) {
@@ -47,7 +58,7 @@ const UserData = () => {
     getAllUsers();
     // getUserTasks();
     // eslint-disable-next-line
-  }, [role]);
+  }, [state.login.signIn.user.role]);
 
   // console.log(allUsers);
 
@@ -110,9 +121,11 @@ const UserData = () => {
         }}
       >
         <h2 style={{ color: "black", fontSize: "30px" }}>user email: </h2>
-        <h2 style={{ color: "rgba(0, 0, 0, 0.7)" }}>{userEmail}</h2>
+        <h2 style={{ color: "rgba(0, 0, 0, 0.7)" }}>
+          {state.login.signIn.user.email}
+        </h2>
       </div>
-      {role === "61a60b6d52ebd90581f0ff04" ? (
+      {state.login.signIn.user.role === "61a60b6d52ebd90581f0ff04" ? (
         <div className="adminDiv">
           <h3 className="roleH"> Admin</h3>
           <button onClick={getting}>Get All Users</button>
