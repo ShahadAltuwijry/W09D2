@@ -2,15 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style.css";
-import { login } from "./../reducers/login.js";
-import { useSelector } from "react-redux";
+import { get_tasks } from "./../reducers/tasks.js";
+import { useSelector, useDispatch } from "react-redux";
 
 const Tasks = () => {
   const state = useSelector((state) => {
     return {
       login: state,
+      task: state.task,
     };
   });
+  console.log(state);
+
+  const dispatch = useDispatch();
 
   const [tasks, setTasks] = useState([]);
   const [userTasks, setUserTasks] = useState([]);
@@ -29,12 +33,21 @@ const Tasks = () => {
         headers: { Authorization: `Bearer ${state.login.signIn.token}` },
       });
 
-      setTasks(res.data);
+      // console.log("res.data hereeee", res.data);
+      const data = {
+        tasks: res.data.map((item) => {
+          return item;
+        }),
+      };
+      console.log(data.tasks, "data tasks");
+      dispatch(get_tasks({ data }));
+
+      // setTasks(res.data);
     } catch (error) {
       console.log(error.message);
     }
   };
-
+  // console.log(state.task, "state task");
   //to get all users tasks for admins only------------------------
   const getAllUsersTasks = async () => {
     try {
