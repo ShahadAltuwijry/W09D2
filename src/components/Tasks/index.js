@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style.css";
-import { get_tasks } from "./../reducers/tasks.js";
+import {
+  create,
+  get_tasks,
+  user_tasks,
+  delete_tasks,
+  comp_task,
+} from "./../reducers/tasks.js";
 import { useSelector, useDispatch } from "react-redux";
 
 const Tasks = () => {
@@ -10,10 +16,10 @@ const Tasks = () => {
     return {
       login: state,
       task: state.task,
+      userTask: state.userTask,
     };
   });
   console.log(state);
-
   const dispatch = useDispatch();
 
   const [tasks, setTasks] = useState([]);
@@ -27,27 +33,29 @@ const Tasks = () => {
     navigate("/");
   };
 
+  //user tasks
   const getTasks = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/allTasks`, {
         headers: { Authorization: `Bearer ${state.login.signIn.token}` },
       });
 
-      // console.log("res.data hereeee", res.data);
       const data = {
         tasks: res.data.map((item) => {
           return item;
         }),
       };
-      console.log(data.tasks, "data tasks");
-      dispatch(get_tasks({ data }));
+      // console.log(res.data, "data tasks");
+      dispatch(user_tasks({ data }));
 
-      // setTasks(res.data);
+      setTasks(res.data);
     } catch (error) {
       console.log(error.message);
     }
   };
-  // console.log(state.task, "state task");
+
+  // console.log(state, "state task");
+
   //to get all users tasks for admins only------------------------
   const getAllUsersTasks = async () => {
     try {
@@ -55,11 +63,20 @@ const Tasks = () => {
         headers: { Authorization: `Bearer ${state.login.signIn.token}` },
       });
 
+      const data = {
+        tasks: res.data,
+        // .map((item) => {
+        //   return item;
+        // }),
+      };
+      // console.log(res.data, "data tasks");
+      dispatch(get_tasks({ data }));
       setUserTasks(res.data);
     } catch (error) {
       console.log(error);
     }
   };
+
   //------------------------------------------------
 
   useEffect(() => {
@@ -85,6 +102,12 @@ const Tasks = () => {
           headers: { Authorization: `Bearer ${state.login.signIn.toke}` },
         }
       );
+
+      const data = {
+        newTask: e.target.addTask.value,
+      };
+      dispatch(create({ date }));
+
       setTasks(res.data);
       getTasks();
       getAllUsersTasks();
@@ -103,6 +126,11 @@ const Tasks = () => {
         },
       });
 
+      const data = {
+        completed: "",
+      };
+      dispatch(comp_task({ data }));
+
       getTasks();
       getAllUsersTasks();
     } catch (error) {
@@ -118,6 +146,12 @@ const Tasks = () => {
           Authorization: `Bearer ${state.login.signIn.token}`,
         },
       });
+
+      const data = {
+        delTask: "",
+      };
+      dispatch(delete_tasks({ data }));
+
       getTasks();
     } catch (error) {
       console.log(error.message);
@@ -132,6 +166,12 @@ const Tasks = () => {
           Authorization: `Bearer ${state.login.signIn.token}`,
         },
       });
+
+      const data = {
+        delTask: "",
+      };
+      dispatch(delete_tasks({ data }));
+
       getAllUsersTasks();
     } catch (error) {
       console.log(error.message);
