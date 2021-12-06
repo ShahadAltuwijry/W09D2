@@ -1,9 +1,9 @@
-const instialState = {
+const initialState = {
   user: null,
   token: "",
 };
 
-const signIn = (state = instialState, action) => {
+const signIn = (state = initialState, action) => {
   const { type, payload } = action;
 
   switch (type) {

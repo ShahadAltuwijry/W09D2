@@ -19,14 +19,14 @@ const Tasks = () => {
   const [userTasks, setUserTasks] = useState([]);
   const [id, setId] = useState("");
   const [role, setRole] = useState("");
-  const [token, setToken] = useState("");
+  // const [token, setToken] = useState("");
   const navigate = useNavigate();
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const addToken = async () => {
-    const userLogged = await localStorage.getItem("user");
-    setToken(JSON.parse(userLogged));
+    // const userLogged = await localStorage.getItem("user");
+    // setToken(JSON.parse(userLogged));
 
     const id = await localStorage.getItem("id");
     setId(JSON.parse(id));
@@ -61,7 +61,7 @@ const Tasks = () => {
   const getAllUsersTasks = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/adminGet`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${state.login.signIn.token}` },
       });
 
       //   console.log(res.data);
@@ -77,19 +77,19 @@ const Tasks = () => {
   useEffect(() => {
     getTasks();
     // eslint-disable-next-line
-  }, [token]);
+  }, [state.login.signIn.token]);
 
   useEffect(() => {
     getAllUsersTasks();
     // eslint-disable-next-line
-  }, [token]);
+  }, [state.login.signIn.token]);
 
   const addTask = async (e) => {
     e.preventDefault();
     try {
       let newTask = e.target.addTask.value;
       console.log(newTask);
-      console.log(token);
+      // console.log(token);
       const res = await axios.post(`${BASE_URL}/task/${id}`, {
         name: newTask,
         // headers: { Authorization: `Bearer ${token}` },
@@ -109,7 +109,7 @@ const Tasks = () => {
       // eslint-disable-next-line
       let res = await axios.put(`${BASE_URL}/check/${_id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${state.login.signIn.token}`,
         },
       });
 
@@ -125,7 +125,7 @@ const Tasks = () => {
       // eslint-disable-next-line
       let res = await axios.delete(`${BASE_URL}/delete/${_id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${state.login.signIn.token}`,
         },
       });
       getTasks();
@@ -139,7 +139,7 @@ const Tasks = () => {
       // eslint-disable-next-line
       let res = await axios.delete(`${BASE_URL}/adminDel/${_id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${state.login.signIn.token}`,
         },
       });
       getAllUsersTasks();
@@ -168,7 +168,7 @@ const Tasks = () => {
         //   <h1>you must login or register first</h1>
         //   <button onClick={() => moving()}>Go</button>
         // </>
-        <button onClick={() => moving()}>go</button>
+        <button onClick={moving()}>go</button>
       ) : (
         <div className="taskMainDiv">
           <h1>Tasks</h1>
